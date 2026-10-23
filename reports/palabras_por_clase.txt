@@ -1,0 +1,3 @@
+NEGATIVO  not, junk, useless, garbage, terrible, poor, return, horrible, returned, not buy, not worth, returning, not good, no, waste
+NEUTRO    but, ok, okay, not, however, otherwise, stars, decent, meh, average, though, works but, not bad, three stars, not very
+POSITIVO  great, perfect, love, excellent, awesome, perfectly, works, good, easy, amazing, nice, best, my, highly, well

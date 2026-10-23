@@ -1,0 +1,59 @@
+# Configuración única de los experimentos (EC2).
+# Todos los scripts de src/ leen este archivo: misma semilla, misma partición, mismas features.
+
+seed: 42
+
+data:
+  path: data/electronics_50k.parquet
+  text_col: review
+  label_col: label
+  classes: [negativo, neutro, positivo]
+  quitar_titulo_estrellas: true  # quita títulos automáticos 'Five Stars' (leakage); false = como el notebook 02
+  test_size: 0.2            # 80 % train / 20 % test, estratificado
+  split_file: data/split.csv # índices de train/test guardados para que todos usen la misma partición
+
+tfidf:
+  ngram_range: [1, 2]
+  min_df: 3
+  max_df: 0.9
+  max_features: 100000
+  sublinear_tf: true
+
+models:
+  dummy:
+    strategy: most_frequent
+  logreg:
+    C: 2
+    max_iter: 2000
+  svm:
+    C: 0.5
+  lightgbm:
+    max_features: 20000     # TF-IDF más chico para que LightGBM no tarde demasiado
+    n_estimators: 400
+    learning_rate: 0.1
+    num_leaves: 63
+
+tuning:
+  model: logreg
+  param: C
+  grid: [0.5, 1, 2, 4, 8]
+  cv: 3
+  scoring: f1_macro
+
+automl:
+  tool: flaml
+  time_budget_s: 900        # 15 min; subir si hay tiempo
+  metric: macro_f1
+  svd_components: 300       # TF-IDF -> TruncatedSVD para que FLAML trabaje con features densas
+  estimators: [lgbm, xgboost, rf, extra_tree, lrl1]
+
+unsupervised:
+  svd_components: 100
+  k_range: [2, 3, 4, 5, 6, 7, 8, 10, 12]
+  silhouette_sample: 10000
+  top_terms: 15
+
+paths:
+  models: models
+  reports: reports
+  figures: reports/figures

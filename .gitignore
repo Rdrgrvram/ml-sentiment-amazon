@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+*.pyc
+.DS_Store
+# embeddings de la Parte II (pesados)
+data/*.npy
+catboost_info/

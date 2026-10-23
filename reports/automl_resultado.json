@@ -1,0 +1,15 @@
+{
+  "herramienta": "FLAML",
+  "presupuesto_s": 120,
+  "metrica_busqueda": "macro_f1",
+  "features": "TF-IDF + SVD(300)",
+  "mejor_estimador": "lrl1",
+  "mejor_config": {
+    "C": 1.0
+  },
+  "f1_cv": 0.7210870853346456,
+  "accuracy": 0.7195,
+  "f1_macro": 0.7195856394082295,
+  "f1_neutro": 0.6250187265917603,
+  "seg_total": 176.8
+}

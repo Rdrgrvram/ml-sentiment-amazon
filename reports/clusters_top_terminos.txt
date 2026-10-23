@@ -1,0 +1,12 @@
+Cluster 0: works, fine, works fine, works great, perfectly, works perfectly, advertised, just, good, works works, like, no, use, works good, easy
+Cluster 1: did, did not, not work, work, not fit, fit, return, returned, like, product, just, no, work did, bought, worked
+Cluster 2: good, not good, price, quality, good quality, good product, good price, product, great, use, like, far, just, work, pretty
+Cluster 3: no, use, just, time, like, device, amazon, work, using, ve, new, way, unit, tv, product
+Cluster 4: sound, quality, sound quality, headphones, good, ear, great, speaker, speakers, great sound, music, volume, better, bass, ears
+Cluster 5: working, stopped, stopped working, months, working months, month, worked, just, weeks, not working, days, working month, year, great, no
+Cluster 6: great, works great, works, great product, product, price, great price, easy, use, not great, worked, quality, work, perfect, value
+Cluster 7: camera, lens, cameras, video, good, great, use, pictures, quality, no, picture, just, bag, like, does
+Cluster 8: does, does not, not work, work, not fit, fit, like, just, use, no, works, product, stay, good, charge
+Cluster 9: love, great, love love, easy, use, perfect, color, like, just, product, really, little, nice, kindle, good
+Cluster 10: use, like, product, no, just, work, nice, buy, money, ok, broke, easy, bought, cheap, quality
+Cluster 11: case, ipad, like, fits, nice, cover, fit, great, great case, does, good, just, use, protection, kindle
