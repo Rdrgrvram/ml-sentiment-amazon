@@ -41,7 +41,9 @@ def tfidf(cfg: dict, max_features: int | None = None) -> TfidfVectorizer:
 
 def logreg(cfg: dict, C: float) -> Pipeline:
     return Pipeline([("tfidf", tfidf(cfg)),
-                     ("clf", LogisticRegression(C=C, max_iter=cfg["models"]["logreg"]["max_iter"]))])
+                     ("clf", LogisticRegression(C=C,
+                                                max_iter=cfg["models"]["logreg"]["max_iter"],
+                                                random_state=cfg["seed"]))])
 
 
 def build_models(cfg: dict, rapido: bool = False) -> dict[str, Pipeline]:
@@ -57,7 +59,8 @@ def build_models(cfg: dict, rapido: bool = False) -> dict[str, Pipeline]:
         modelos["TF-IDF + LightGBM"] = Pipeline([
             ("tfidf", tfidf(cfg, lg["max_features"])),
             ("clf", LGBMClassifier(n_estimators=lg["n_estimators"], learning_rate=lg["learning_rate"],
-                                   num_leaves=lg["num_leaves"], random_state=seed, verbose=-1))])
+                                   num_leaves=lg["num_leaves"], random_state=seed,
+                                   n_jobs=lg.get("n_jobs", 2), verbose=-1))])
     return modelos
 
 

@@ -1,12 +1,16 @@
-"""Aprendizaje no supervisado: TF-IDF -> TruncatedSVD (LSA) -> KMeans.
+"""Punto de entrada del aprendizaje no supervisado.
 
-Uso:  python -m src.unsupervised           (elige k por silueta)
-      python -m src.unsupervised --k 6     (fija k)
+Por defecto ejecuta el método final: TF-IDF -> SVD -> UMAP -> HDBSCAN.
+K-Means se conserva como benchmark metodológico reproducible.
+
+Uso:  python -m src.unsupervised
+      python -m src.unsupervised --metodo kmeans
+      python -m src.unsupervised --metodo kmeans --k 12
 
 Se ajusta solo con train y NO usa la etiqueta para agrupar: la etiqueta se usa
-después, solo para interpretar (cruce cluster x sentimiento).
-Salidas: reports/figures/kmeans_seleccion_k.png, reports/figures/clusters_svd2d.png,
-         reports/clusters_resumen.csv, reports/clusters_top_terminos.txt
+después, solo para interpretar (cruce cluster x sentimiento). El método final
+genera `reports/no_supervisado_*` y `reports/figures/no_supervisado_final.png`;
+el benchmark K-Means conserva sus salidas `kmeans_*` y `clusters_*`.
 """
 from __future__ import annotations
 
@@ -26,7 +30,7 @@ from sklearn.preprocessing import Normalizer
 from src.preprocess import ROOT, get_split, load_config
 
 
-def main(k_fijo: int | None = None):
+def main_kmeans(k_fijo: int | None = None):
     cfg = load_config()
     u, seed = cfg["unsupervised"], cfg["seed"]
     rep, fig_dir = ROOT / cfg["paths"]["reports"], ROOT / cfg["paths"]["figures"]
@@ -40,7 +44,10 @@ def main(k_fijo: int | None = None):
                           max_features=20000, sublinear_tf=True)
     T = vec.fit_transform(X_tr)
     svd = TruncatedSVD(n_components=u["svd_components"], random_state=seed)
-    Z = Normalizer(copy=False).fit_transform(svd.fit_transform(T))   # LSA normalizado ~ coseno
+    with np.errstate(divide="ignore", over="ignore", invalid="ignore"):
+        Z = Normalizer(copy=False).fit_transform(svd.fit_transform(T))
+    if not np.isfinite(Z).all():
+        raise ValueError("SVD produjo valores no finitos")
     print(f"Varianza explicada por {u['svd_components']} componentes: {svd.explained_variance_ratio_.sum():.3f}")
 
     # Selección de k: inercia (codo) + silueta
@@ -86,5 +93,13 @@ def main(k_fijo: int | None = None):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
+    ap.add_argument("--metodo", choices=["umap_hdbscan", "kmeans"],
+                    default="umap_hdbscan",
+                    help="método final (por defecto) o benchmark K-Means")
     ap.add_argument("--k", type=int)
-    main(ap.parse_args().k)
+    args = ap.parse_args()
+    if args.metodo == "kmeans":
+        main_kmeans(args.k)
+    else:
+        from src.unsupervised_umap_hdbscan import main
+        main()

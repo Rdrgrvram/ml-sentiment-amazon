@@ -1,0 +1,26 @@
+Cluster 0: great, works, good, work, does, not work, did, product, did not, quality, does not, price, love, fit, like
+Cluster 1: router, wifi, connection, netgear, internet, signal, extender, network, connect, ghz, wireless, home, modem, range, no
+Cluster 2: year, year old, old, died, year use, lasted, psu, new, ripping, great lasted, worked year, great, daughter, lasted little, blew
+Cluster 3: screen, case, ipad, protector, screen protector, bubbles, ipad case, great, glass, touch, pad, bubbles screen, protect, clean, protection
+Cluster 4: long, not long, did not, feet long, did, battery, feet, lasts, didn long, ok, gizmo, knew not, haven long, long lasting, battery not
+Cluster 5: speaker, sound, speaker speaker, bluetooth speaker, bluetooth, hardware, tripod, louder, little, expecting, quality, hi, way low, great, volume low
+Cluster 6: nice, advertised, case, nice case, laptop, nice product, nice price, good, nice looking, headphones, large, sturdy, running, collection, stickers
+Cluster 7: size, wrong size, wrong, paperwhite, slipping, bought, right size, large, variety, returned, rubber, right, included, mm, sent wrong
+Cluster 8: phone, calls, phone not, cell, phone calls, right, cell phone, phone chargers, phone jack, locked, amazon, background, phones, big fit, fit phone
+Cluster 9: sure, not sure, make sure, make, questionable, insurance, sure people, difference, ink, sucks not, resolution not, dsl, lets, make difference, fully
+Cluster 10: not bad, bad, decent, bad not, not best, not accurate, product little, compatibility, works okay, not play, rigid, accurate, price not, wasn, range not
+Cluster 11: quit working, quit, working, working couple, weeks, weeks use, couple weeks, working week, couple, week, wouldn buy, use, remote remote, remote, short time
+Cluster 12: loud, not loud, volume, quiet, hear, thought, max, comfortable, device, super, speaker, volume low, barely hear, volume max, great
+Cluster 13: gift, bought gift, given, bought, durable, daughter, pretty, liked, say, holidays, gift friend, law, not bulky, happy not, think
+Cluster 14: better, false, better bought, work better, signals, available, hdmi, antenna, searched, lighted, lived, dropped, needs, not ask, vs
+Cluster 15: customer service, customer, service, called, called customer, amazon, replacement, contacted customer, sent, product, time, new, email, echo, bad customer
+Cluster 16: don, don buy, bother, buy, worked, days, don like, worked days, work worked, don work, suck, pay, focus, don want, normal
+Cluster 17: cover, ipad, ipad cover, cover not, tablet cover, tablet, cracked, ordered, nice, cover nice, kindle cover, fold, apple, kindle, price
+Cluster 18: radio, clock, alarm, clock radio, alarm clock, reception, station, stations, small, use, dim, set, time, fm, volume
+Cluster 19: small, handy, ultrabook, key, small speakers, bigger, not able, look product, projector, not bother, plugging, spaces, able, bother, movie
+Cluster 20: looks, looks good, good, good fits, looks great, product looks, cheaper, fake, fits, deterrent, looks like, samsung ssd, great, no, wish little
+Cluster 21: item, described, great item, item not, ordered item, waterproof, reorder, item arrived, arrived broken, son loves, subpar, received, order, not happier, say battery
+Cluster 22: need, not need, never know, sending, know, never, unable use, feet, need not, need know, attachments, manuals, imac, having trouble, cleaning
+Cluster 23: batteries, extra batteries, extra, charge, charger great, canon, better, charger, better way, way charge, worthless, replacing, charges, great batteries, battery
+Cluster 24: used, used used, open box, guest, finding, backup, daily, bedroom, students, complained, box, television, lost, seam, used couple
+Cluster 25: okay, opinion, okay not, just okay, gaming, needed, just, sockets, signal, everytime, preferred, static, used, bulky, cute

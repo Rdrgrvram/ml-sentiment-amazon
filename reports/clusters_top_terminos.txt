@@ -1,12 +1,20 @@
-Cluster 0: works, fine, works fine, works great, perfectly, works perfectly, advertised, just, good, works works, like, no, use, works good, easy
-Cluster 1: did, did not, not work, work, not fit, fit, return, returned, like, product, just, no, work did, bought, worked
-Cluster 2: good, not good, price, quality, good quality, good product, good price, product, great, use, like, far, just, work, pretty
-Cluster 3: no, use, just, time, like, device, amazon, work, using, ve, new, way, unit, tv, product
-Cluster 4: sound, quality, sound quality, headphones, good, ear, great, speaker, speakers, great sound, music, volume, better, bass, ears
-Cluster 5: working, stopped, stopped working, months, working months, month, worked, just, weeks, not working, days, working month, year, great, no
-Cluster 6: great, works great, works, great product, product, price, great price, easy, use, not great, worked, quality, work, perfect, value
-Cluster 7: camera, lens, cameras, video, good, great, use, pictures, quality, no, picture, just, bag, like, does
-Cluster 8: does, does not, not work, work, not fit, fit, like, just, use, no, works, product, stay, good, charge
-Cluster 9: love, great, love love, easy, use, perfect, color, like, just, product, really, little, nice, kindle, good
-Cluster 10: use, like, product, no, just, work, nice, buy, money, ok, broke, easy, bought, cheap, quality
-Cluster 11: case, ipad, like, fits, nice, cover, fit, great, great case, does, good, just, use, protection, kindle
+Cluster 0: tv, remote, picture, mount, great, use, amazon, no, samsung, wall, roku, just, cable, smart, hdmi
+Cluster 1: works, works great, great, fine, works fine, just, perfectly, good, works works, works perfectly, like, use, great works, works good, time
+Cluster 2: great, great product, product, not great, value, great price, worked, great value, quality, buy, worked great, perfect, product great, work, little
+Cluster 3: nice, looks, really, looking, like, good, great, little, nice case, just, use, cover, product, really nice, quality
+Cluster 4: sound, quality, sound quality, ear, headphones, good, great, music, speaker, volume, ears, great sound, better, like, noise
+Cluster 5: no, issues, problems, no issues, no problems, way, longer, no longer, no complaints, complaints, use, work, product, just, works
+Cluster 6: does, does not, not work, work, not fit, fit, like, just, works, stay, use, product, no, not stay, good
+Cluster 7: money, waste, waste money, not waste, time, don, buy, junk, work, don waste, waste time, save, save money, money not, product
+Cluster 8: camera, lens, cameras, video, great, good, pictures, use, quality, picture, bag, no, just, like, does
+Cluster 9: case, ipad, like, fits, cover, fit, great, great case, good, nice, does, just, kindle, protection, stand
+Cluster 10: easy, install, easy install, easy use, use, set, great, easy set, good, works, setup, not easy, great easy, no, super
+Cluster 11: use, like, product, just, work, broke, buy, ok, cheap, bought, quality, returned, cable, worked, better
+Cluster 12: battery, life, battery life, charge, batteries, good, charger, hours, great, use, long, charged, time, day, just
+Cluster 13: did, did not, not work, work, not fit, fit, return, returned, like, product, work did, just, no, worked, tried
+Cluster 14: price, great price, good price, good, great, quality, works, worth, ok, better, price great, price good, like, worth price, price not
+Cluster 15: good, not good, good product, good quality, quality, product, good price, great, use, just, far, work, like, buy, good not
+Cluster 16: working, stopped, stopped working, months, working months, month, worked, weeks, just, not working, days, working month, year, great, return
+Cluster 17: love, love love, great, use, perfect, color, like, easy, just, little, kindle, really, time, good, product
+Cluster 18: keyboard, mouse, keys, use, like, using, key, just, usb, feel, computer, wireless, logitech, great, typing
+Cluster 19: just, time, use, device, no, like, work, new, using, amazon, unit, ve, power, wifi, router

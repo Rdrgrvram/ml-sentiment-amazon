@@ -24,7 +24,7 @@ models:
   dummy:
     strategy: most_frequent
   logreg:
-    C: 2
+    C: 1                    # valor final; la selección se reproduce con tuning.grid
     max_iter: 2000
   svm:
     C: 0.5
@@ -33,6 +33,7 @@ models:
     n_estimators: 400
     learning_rate: 0.1
     num_leaves: 63
+    n_jobs: 2
 
 tuning:                    # C de la LogReg, elegido con el conjunto de validación
   model: logreg
@@ -48,8 +49,38 @@ automl:
 
 unsupervised:
   svd_components: 100
-  k_range: [2, 3, 4, 5, 6, 7, 8, 10, 12]
+  k_range: [2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16, 18, 20]
   silhouette_sample: 10000
+  top_terms: 15
+
+# Comparación opcional: modelo probabilístico sobre la misma representación LSA.
+# Se usa covarianza diagonal para mantener razonable el costo con ~40k reseñas.
+gmm:
+  k_range: [4, 6, 8, 10, 12]
+  covariance_type: diag
+  max_iter: 100
+  top_terms: 15
+
+# DBSCAN se ejecuta sobre una muestra porque su costo puede crecer de forma
+# cuadrática. eps se propone mediante cuantiles de distancia al vecino 10.
+dbscan:
+  sample_size: 5000
+  min_samples: 10
+  eps_quantiles: [0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70]
+  top_terms: 15
+
+# Reducción no lineal + clustering de densidad variable. Se limita a una
+# muestra estratificada para que el experimento sea reproducible y manejable.
+umap_hdbscan:
+  sample_size: 8000
+  svd_components: 100
+  umap_components: 10
+  n_neighbors: 30
+  min_dist: 0.0
+  min_cluster_sizes: [50, 100, 200, 300]
+  selected_min_cluster_size: 100  # equilibrio final: 30 clusters, 75.5 % de cobertura
+  min_samples: 10
+  silhouette_sample: 5000
   top_terms: 15
 
 paths:

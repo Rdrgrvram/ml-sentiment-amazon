@@ -1,0 +1,30 @@
+Cluster 0: ok, ok not, just ok, ok ok, works ok, ok product, not great, just, works, great, product, quality, work, price, sounds
+Cluster 1: mouse, keyboard, keys, key, use, great, just, like, good, hand, work, works, great mouse, little, keyboard mouse
+Cluster 2: working, stopped working, stopped, months, working months, quit working, quit, worked, month, not working, just, weeks, just stopped, working month, working couple
+Cluster 3: fit, not fit, did not, did, does not, does, case, tight, fit did, like, fit ipad, product, ipad, properly, fits
+Cluster 4: worth, okay, not worth, bad, not bad, poor quality, poor, quality, price, worth price, worth money, just, money, just okay, bad not
+Cluster 5: cable, cables, hdmi, works, hdmi cable, great, cable not, quality, good cable, needed, good, usb, cable works, great cable, connectors
+Cluster 6: usb, cord, power, drive, fine, works, works fine, no, port, just, work, hard drive, short, hard, good
+Cluster 7: works great, works, great, easy, easy use, use, easy set, set, great works, love, good, product, product works, no, like
+Cluster 8: love, recommend, highly, love love, highly recommend, not recommend, great, perfect, highly recommended, use, recommended, good, tv, really, easy
+Cluster 9: cheap, easily, break, plastic, break easily, cheap plastic, quality, job, breaks easily, comes, material, breaks, does not, does, crap
+Cluster 10: works, good, great, pretty, not good, far, works like, expensive, works good, like, works works, good not, far good, just, works far
+Cluster 11: did not, did, not work, work, work did, returned, like, return, buy, no, sent, not like, just, not buy, product
+Cluster 12: not work, work, does not, does, work does, no, usb, does work, works, bought, working, just, product, returned, tv
+Cluster 13: worked, worked great, never, great, don, never worked, got, months, worked perfectly, month, work, don work, buy, worked worked, second
+Cluster 14: camera, lens, sure, cameras, good, not sure, great, quality, video, pictures, like, canon, photos, mm, just
+Cluster 15: buy, junk, not buy, great buy, piece, piece junk, great, like, apart, just, garbage, month, fell, fell apart, better
+Cluster 16: waste, money, waste money, not waste, save money, waste time, save, buy, time, junk, time money, work, does, money does, product
+Cluster 17: need, use, not use, great, difficult use, use not, really, not need, really need, difficult, no need, good, work, time, use time
+Cluster 18: no, returned, item, returned not, no problems, problems, received, way, instructions, no way, issues, no issues, no instructions, la, el
+Cluster 19: nice, band, color, picture, watch, little, nice price, nice product, price, looking, nice looking, stickers, like, good, nice little
+Cluster 20: good, price, quality, good quality, product, good price, good product, great, great price, not good, quality product, quality great, great quality, works, like
+Cluster 21: looks, small, really, size, looks good, like, right, good, great, looks great, thought, wrong size, looks like, wrong, smaller
+Cluster 22: case, cover, ipad, screen, tablet, bag, nice, like, laptop, great, protector, bubbles, does, protection, use
+Cluster 23: ear, headphones, sound, noise, ears, comfortable, buds, good, pair, fit, like, quality, ear buds, great, cancelling
+Cluster 24: sound, speaker, quality, sound quality, loud, speakers, volume, great, good, excellent, bass, great sound, good sound, bluetooth, price
+Cluster 25: router, wifi, connect, signal, connection, internet, extender, netgear, ghz, range, modem, network, no, not connect, mbps
+Cluster 26: charge, phone, batteries, hold, battery, not hold, charger, hold charge, not charge, charging, does not, great, does, use, works
+Cluster 27: battery, life, battery life, long, not long, good, hours, sound, charge, great, good battery, use, did, did not, time
+Cluster 28: ca, ca not, kindle, just, use, device, amazon, time, like, does, no, good, tablet, really, screen
+Cluster 29: tv, remote, player, dvd, mount, roku, just, works, no, use, great, good, picture, does, control

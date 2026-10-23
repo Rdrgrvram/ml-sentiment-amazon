@@ -1,0 +1,9 @@
+variable,tipo,faltantes,valores_unicos,descripcion
+review,object,0,49998,Título y texto de la reseña; entrada principal del modelo.
+label,category,0,3,"Sentimiento débil derivado del rating: 1-2 negativo, 3 neutro, 4-5 positivo."
+rating,float64,0,5,Calificación original de 1 a 5 estrellas.
+asin,object,0,36010,Identificador del producto reseñado.
+parent_asin,object,0,33376,Identificador del producto padre o familia de variantes.
+helpful_vote,int64,0,164,Cantidad de votos que marcaron la reseña como útil.
+verified_purchase,bool,0,2,Indica si Amazon registró la compra como verificada.
+fecha,datetime64[ns],0,49995,Fecha de la reseña convertida desde el timestamp original.

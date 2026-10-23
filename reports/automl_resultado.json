@@ -2,14 +2,15 @@
   "herramienta": "FLAML",
   "presupuesto_s": 900,
   "metrica_busqueda": "macro_f1",
+  "protocolo": "holdout 64/16/20; features ajustadas solo con sub-train durante b\u00fasqueda",
   "features": "TF-IDF + SVD(300)",
   "mejor_estimador": "lrl1",
   "mejor_config": {
-    "C": 1.0
+    "C": 1.897880094570495
   },
-  "f1_cv": 0.7210870853346456,
-  "accuracy": 0.7195,
-  "f1_macro": 0.7195856394082295,
-  "f1_neutro": 0.6250187265917603,
-  "seg_total": 953.5
+  "f1_val": 0.7158617842926788,
+  "accuracy": 0.7239,
+  "f1_macro": 0.7240304374628185,
+  "f1_neutro": 0.6300014985763525,
+  "seg_total": 945.8
 }

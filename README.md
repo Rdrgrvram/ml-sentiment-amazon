@@ -18,7 +18,7 @@ como benchmark.
 ```
 data/        electronics_50k.parquet (muestra), split.csv (partición fija), README con cómo obtenerla
 notebooks/   01_datos_y_eda.ipynb, 02_modelos_sentimiento.ipynb (EDA y experimentos explicados)
-src/         preprocess.py, train.py, evaluate.py, unsupervised.py, automl.py
+src/         preparación, entrenamiento, evaluación, no supervisado y AutoML
 models/      sentiment_logreg.joblib (mejor modelo manual)
 reports/     tablas de resultados, figures/ (gráficos), defensa/ (informe y PPT)
 config/      config.yaml (semilla, partición, hiperparámetros de todos los experimentos)
@@ -29,15 +29,33 @@ parte2/      búsqueda semántica y demo Streamlit (fuera del alcance del EC2; s
 ```bash
 python -m venv .venv && .venv\Scripts\activate      # Windows  (Linux/Mac: source .venv/bin/activate)
 pip install -r requirements.txt
+# macOS: brew install libomp   # requerido por LightGBM/XGBoost
 
+python -m src.data_quality     # tabla de variables y diagnóstico reproducible
 python -m src.preprocess      # crea data/split.csv (80/20 estratificado, semilla 42)
 python -m src.train           # Dummy + SVM + LightGBM + LogReg con C ajustado en validación (≈ 17 min; --rapido sin LightGBM)
 python -m src.evaluate        # matriz de confusión, reporte por clase, errores, palabras por clase
-python -m src.unsupervised    # LSA + KMeans, selección de k por silueta, interpretación
+python -m src.unsupervised    # SVD + UMAP + HDBSCAN (método no supervisado final)
 python -m src.automl          # FLAML, misma partición, 15 min (--budget 120 para una prueba)
 python -m src.report_automl   # gráficos de evidencia de AutoML
+python -m src.validate_project # comprobación rápida antes de entregar
 ```
-Orden recomendado: `preprocess → train → evaluate → unsupervised → automl`. Todo lee `config/config.yaml`.
+Orden recomendado: `data_quality → preprocess → train → evaluate → unsupervised → automl`.
+Todo lee `config/config.yaml`. Los notebooks conservan el desarrollo exploratorio; las cifras oficiales
+provienen de `src/` y `reports/`.
+
+El análisis no supervisado final usa una muestra estratificada de 8 000 reseñas: TF-IDF reduce primero a
+100 componentes con SVD y luego UMAP aprende una representación no lineal de 10 dimensiones. HDBSCAN
+detecta regiones densas sin fijar `k` y permite dejar reseñas ambiguas como ruido. Con
+`min_cluster_size=100` se obtuvieron 30 clusters, 75,5 % de cobertura y 24,5 % de ruido. La silueta de
+0,568 se calcula dentro del espacio UMAP y no se compara directamente con la de K-Means sobre SVD.
+
+Los experimentos K-Means, GMM y DBSCAN se conservan como benchmarks:
+```bash
+python -m src.unsupervised --metodo kmeans --k 12
+python -m src.unsupervised_gmm
+python -m src.unsupervised_dbscan
+```
 
 ## Metodología y decisiones
 - **Partición:** train / validación / test = 64 / 16 / 20 %, estratificado y con semilla fija (`data/split.csv`
@@ -58,26 +76,26 @@ Selección con **validación** (16 % de los datos); el test (20 %) se usa una so
 | Modelo | F1 macro validación | F1 macro test | F1 neutro test | Tiempo | Observación |
 |---|---|---|---|---|---|
 | Dummy (clase más frecuente) | 0,167 | 0,167 | 0,000 | 13 s | Baseline / piso |
-| **TF-IDF + LogReg (C=1)** | **0,739** | **0,748** | **0,653** | 34 s | **Elegido por validación** |
-| TF-IDF + LightGBM | 0,732 | 0,732 | 0,632 | 860 s | |
-| TF-IDF + SVM lineal | 0,731 | 0,738 | 0,634 | 18 s | |
-| AutoML FLAML (lrl1, 15 min) | 0,721 (CV) | 0,720 | 0,625 | 954 s | Benchmark |
+| **TF-IDF + LogReg (C=1)** | **0,741** | **0,748** | **0,653** | 17 s | **Elegido por validación** |
+| TF-IDF + LightGBM | 0,728 | 0,732 | 0,633 | 259 s | |
+| TF-IDF + SVM lineal | 0,731 | 0,737 | 0,632 | 8 s | |
+| AutoML FLAML (lrl1, 15 min) | 0,716 | 0,724 | 0,630 | 946 s | Benchmark holdout comparable |
 
 C de la LogReg elegido en validación entre {0,5; 1; 2; 4; 8} (`reports/tuning_logreg_val.csv`).
-Tiempos: entrenamiento en sub-train + reentrenamiento con todo train, en 2 núcleos.
+Tiempos: entrenamiento en sub-train + reentrenamiento con todo train; LightGBM usa 2 núcleos.
 Detalle en `reports/comparativa_final.csv`; evidencia de AutoML en `reports/automl_resultado.json`,
 `reports/automl_trials.csv`, `reports/automl.log` y `reports/figures/automl_curva.png`.
 
 ## Estado del EC2
 - [x] Fuente, subconjunto y etiqueta documentados
 - [x] EDA básico (distribución original, longitudes, palabras por clase)
-- [x] Baseline + 3 modelos clásicos + tuning con CV
+- [x] Baseline + 3 modelos clásicos + tuning con validación holdout
 - [x] Pipeline sin leakage y partición fija
-- [ ] Diagnóstico de calidad de datos y 3–5 hallazgos del EDA en el informe
-- [ ] Análisis de errores interpretado (`reports/errores_logreg.csv`)
-- [ ] No supervisado: elegir k, interpretar clusters, limitaciones (`src/unsupervised.py`)
+- [x] Diagnóstico de calidad, tabla de variables y hallazgos del EDA
+- [x] Análisis de errores interpretado (`reports/errores_logreg.csv`)
+- [x] No supervisado: UMAP + HDBSCAN, comparación con K-Means/GMM/DBSCAN e interpretación
 - [x] AutoML con 15 min y comparación con el mejor manual (`src/automl.py`, `src/report_automl.py`)
-- [ ] Informe técnico (8–12 pág.) y presentación en `reports/defensa/`
+- [ ] Ensamblar el informe técnico (8–12 pág.) y la presentación final
 
 ## Parte II (fuera del EC2)
 `parte2/03_busqueda_semantica.ipynb` (sentence-transformers + coseno) y `parte2/streamlit_app.py` (demo).

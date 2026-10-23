@@ -42,7 +42,7 @@ def main():
     for est, g in t.groupby("estimador"):
         ax.scatter(g.seg, g.f1_val, s=14, label=est, alpha=0.7)
     ax.plot(t.seg, t.f1_val.cummax(), color="black", lw=1.5, label="mejor hasta el momento")
-    ax.set_xlabel("segundos de búsqueda"); ax.set_ylabel("F1 macro (validación CV)")
+    ax.set_xlabel("segundos de búsqueda"); ax.set_ylabel("F1 macro (validación holdout)")
     ax.set_title("FLAML: trials por estimador"); ax.legend(fontsize=8)
     plt.tight_layout(); plt.savefig(fig_dir / "automl_curva.png", dpi=120); plt.close()
 
