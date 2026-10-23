@@ -51,15 +51,32 @@ def main(budget: int | None = None):
     (rep / "automl_resultado.json").write_text(json.dumps(resultado, indent=2, default=str), encoding="utf-8")
     print(json.dumps(resultado, indent=2, default=str))
 
-    # Tabla comparativa final: modelos manuales + mejor de AutoML
+    actualizar_comparativa(cfg, resultado)
+
+
+def actualizar_comparativa(cfg: dict, resultado: dict | None = None):
+    """Tabla final: modelos manuales + mejor de AutoML (sin volver a correr AutoML)."""
+    rep = ROOT / cfg["paths"]["reports"]
+    if resultado is None:
+        resultado = json.loads((rep / "automl_resultado.json").read_text(encoding="utf-8"))
     manual = pd.read_csv(rep / "resultados_modelos.csv")
-    fila = {"modelo": f"AutoML FLAML ({automl.best_estimator})", "accuracy": resultado["accuracy"],
-            "f1_macro": resultado["f1_macro"], "f1_neutro": resultado["f1_neutro"], "seg": seg}
+    fila = {"modelo": f"AutoML FLAML ({resultado['mejor_estimador']})",
+            "f1_val": resultado["f1_cv"],   # F1 de CV de 3 folds dentro de train
+            "accuracy": resultado["accuracy"], "f1_macro": resultado["f1_macro"],
+            "f1_neutro": resultado["f1_neutro"], "seg": resultado["seg_total"],
+            "elegido_por_validacion": False}
     comp = pd.concat([manual[~manual.modelo.str.startswith("AutoML")], pd.DataFrame([fila])])
-    comp.sort_values("f1_macro", ascending=False).to_csv(rep / "comparativa_final.csv", index=False)
+    comp.sort_values("f1_val", ascending=False).to_csv(rep / "comparativa_final.csv", index=False)
+    print(comp.to_string(index=False))
 
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--budget", type=int, help="segundos de búsqueda (por defecto: config)")
-    main(ap.parse_args().budget)
+    ap.add_argument("--solo-comparativa", action="store_true",
+                    help="no corre AutoML; rearma comparativa_final.csv con el último resultado")
+    args = ap.parse_args()
+    if args.solo_comparativa:
+        actualizar_comparativa(load_config())
+    else:
+        main(args.budget)

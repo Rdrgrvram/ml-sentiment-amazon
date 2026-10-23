@@ -10,6 +10,7 @@ data:
   classes: [negativo, neutro, positivo]
   quitar_titulo_estrellas: true  # quita títulos automáticos 'Five Stars' (leakage); false = como el notebook 02
   test_size: 0.2            # 80 % train / 20 % test, estratificado
+  val_size: 0.2             # dentro de train: 80 % sub-train / 20 % validación → 64/16/20 global
   split_file: data/split.csv # índices de train/test guardados para que todos usen la misma partición
 
 tfidf:
@@ -33,12 +34,10 @@ models:
     learning_rate: 0.1
     num_leaves: 63
 
-tuning:
+tuning:                    # C de la LogReg, elegido con el conjunto de validación
   model: logreg
   param: C
   grid: [0.5, 1, 2, 4, 8]
-  cv: 3
-  scoring: f1_macro
 
 automl:
   tool: flaml

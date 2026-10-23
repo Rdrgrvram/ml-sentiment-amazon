@@ -1,24 +1,31 @@
-"""Baseline + 3 modelos clásicos + tuning del mejor lineal (reproduce el notebook 02).
+"""Baseline + 3 modelos clásicos + tuning, con selección por VALIDACIÓN (el test no se usa para elegir).
 
-Uso:  python -m src.train            (todos los modelos, ~8 min por LightGBM)
+Protocolo (train / validación / test = 64 / 16 / 20 %, estratificado, semilla fija):
+  1. train se divide en sub-train y validación (data/split.csv ya separa el test).
+  2. Cada modelo y cada valor de C de la LogReg se entrena en sub-train y se evalúa en validación.
+  3. Se elige el modelo con mejor F1 macro de validación.
+  4. Solo después, cada modelo se reentrena con todo train y se evalúa UNA vez en test (reporte final).
+
+Uso:  python -m src.train            (todos los modelos, ≈ 20 min por LightGBM)
       python -m src.train --rapido   (sin LightGBM)
 
-Salidas: reports/resultados_modelos.csv, models/sentiment_logreg.joblib
+Salidas: reports/resultados_modelos.csv, reports/tuning_logreg_val.csv,
+         models/sentiment_logreg.joblib (modelo elegido, reentrenado con todo train)
 """
 from __future__ import annotations
 
 import argparse
-import json
 import time
 
 import joblib
 import pandas as pd
 from lightgbm import LGBMClassifier
+from sklearn.base import clone
 from sklearn.dummy import DummyClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, f1_score
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
 
@@ -32,14 +39,17 @@ def tfidf(cfg: dict, max_features: int | None = None) -> TfidfVectorizer:
                            max_features=max_features or t["max_features"])
 
 
+def logreg(cfg: dict, C: float) -> Pipeline:
+    return Pipeline([("tfidf", tfidf(cfg)),
+                     ("clf", LogisticRegression(C=C, max_iter=cfg["models"]["logreg"]["max_iter"]))])
+
+
 def build_models(cfg: dict, rapido: bool = False) -> dict[str, Pipeline]:
     m, seed = cfg["models"], cfg["seed"]
-    # El TF-IDF va dentro del Pipeline: se ajusta solo con train (evita data leakage).
+    # El TF-IDF va dentro del Pipeline: se ajusta solo con los datos de entrenamiento (evita leakage).
     modelos = {
         "Dummy (baseline)": Pipeline([("tfidf", tfidf(cfg, 1000)),
                                       ("clf", DummyClassifier(strategy=m["dummy"]["strategy"]))]),
-        "TF-IDF + LogReg": Pipeline([("tfidf", tfidf(cfg)),
-                                     ("clf", LogisticRegression(C=m["logreg"]["C"], max_iter=m["logreg"]["max_iter"]))]),
         "TF-IDF + SVM lineal": Pipeline([("tfidf", tfidf(cfg)), ("clf", LinearSVC(C=m["svm"]["C"]))]),
     }
     if not rapido:
@@ -60,34 +70,45 @@ def metricas(y_true, y_pred) -> dict:
 def main(rapido: bool = False):
     cfg = load_config()
     X_tr, X_te, y_tr, y_te = get_split(cfg)
+    val_size = cfg["data"].get("val_size", 0.2)
+    X_sub, X_val, y_sub, y_val = train_test_split(X_tr, y_tr, test_size=val_size,
+                                                  stratify=y_tr, random_state=cfg["seed"])
+    print(f"sub-train={len(X_sub)}  validación={len(X_val)}  test={len(X_te)} (test no se usa para elegir)")
 
-    filas = []
-    for nombre, modelo in build_models(cfg, rapido).items():
+    # 1) Tuning de C de la LogReg en validación
+    tun = []
+    for C in cfg["tuning"]["grid"]:
+        p = logreg(cfg, C).fit(X_sub, y_sub).predict(X_val)
+        tun.append({"C": C, "f1_val": f1_score(y_val, p, average="macro")})
+        print(f"LogReg C={C:<4} F1 val = {tun[-1]['f1_val']:.4f}")
+    tun = pd.DataFrame(tun)
+    C_best = float(tun.loc[tun.f1_val.idxmax(), "C"])
+
+    candidatos = build_models(cfg, rapido)
+    candidatos[f"TF-IDF + LogReg (C={C_best:g}, ajustada en val)"] = logreg(cfg, C_best)
+
+    # 2) Selección en validación y 3) reporte final en test
+    filas, finales = [], {}
+    for nombre, modelo in candidatos.items():
         t0 = time.time()
-        modelo.fit(X_tr, y_tr)
-        filas.append({"modelo": nombre, **metricas(y_te, modelo.predict(X_te)),
+        m_val = clone(modelo).fit(X_sub, y_sub)
+        f1_val = f1_score(y_val, m_val.predict(X_val), average="macro")
+        m_fin = clone(modelo).fit(X_tr, y_tr)          # reentrenado con todo train
+        finales[nombre] = m_fin
+        filas.append({"modelo": nombre, "f1_val": f1_val, **metricas(y_te, m_fin.predict(X_te)),
                       "seg": round(time.time() - t0, 1)})
-        print(f"{nombre:22s} F1 macro = {filas[-1]['f1_macro']:.4f}")
+        print(f"{nombre:40s} F1 val = {f1_val:.4f}  F1 test = {filas[-1]['f1_macro']:.4f}")
 
-    # Ajuste de hiperparámetros con validación cruzada SOLO sobre train.
-    tcfg = cfg["tuning"]
-    base = build_models(cfg, rapido=True)["TF-IDF + LogReg"]
-    t0 = time.time()
-    grid = GridSearchCV(base, {f"clf__{tcfg['param']}": tcfg["grid"]},
-                        scoring=tcfg["scoring"], cv=tcfg["cv"], n_jobs=-1)
-    grid.fit(X_tr, y_tr)
-    mejor = grid.best_estimator_
-    filas.append({"modelo": f"TF-IDF + LogReg ajustada ({grid.best_params_})",
-                  **metricas(y_te, mejor.predict(X_te)), "seg": round(time.time() - t0, 1)})
-    print("Mejor:", grid.best_params_, "F1 CV:", round(grid.best_score_, 4))
+    res = pd.DataFrame(filas).sort_values("f1_val", ascending=False)
+    elegido = res.iloc[0].modelo
+    res["elegido_por_validacion"] = res.modelo == elegido
+    print(f"\nElegido por validación: {elegido}")
 
-    res = pd.DataFrame(filas).sort_values("f1_macro", ascending=False)
-    (ROOT / cfg["paths"]["reports"]).mkdir(exist_ok=True)
-    res.to_csv(ROOT / cfg["paths"]["reports"] / "resultados_modelos.csv", index=False)
-    pd.DataFrame(grid.cv_results_)[["params", "mean_test_score", "std_test_score"]].to_csv(
-        ROOT / cfg["paths"]["reports"] / "tuning_logreg_cv.csv", index=False)
+    rep = ROOT / cfg["paths"]["reports"]; rep.mkdir(exist_ok=True)
+    res.to_csv(rep / "resultados_modelos.csv", index=False)
+    tun.to_csv(rep / "tuning_logreg_val.csv", index=False)
     (ROOT / cfg["paths"]["models"]).mkdir(exist_ok=True)
-    joblib.dump(mejor, ROOT / cfg["paths"]["models"] / "sentiment_logreg.joblib")
+    joblib.dump(finales[elegido], ROOT / cfg["paths"]["models"] / "sentiment_logreg.joblib")
     print(res.to_string(index=False))
 
 

@@ -31,7 +31,7 @@ python -m venv .venv && .venv\Scripts\activate      # Windows  (Linux/Mac: sourc
 pip install -r requirements.txt
 
 python -m src.preprocess      # crea data/split.csv (80/20 estratificado, semilla 42)
-python -m src.train           # Dummy + LogReg + SVM + LightGBM + tuning (≈ 10 min; --rapido sin LightGBM)
+python -m src.train           # Dummy + SVM + LightGBM + LogReg con C ajustado en validación (≈ 17 min; --rapido sin LightGBM)
 python -m src.evaluate        # matriz de confusión, reporte por clase, errores, palabras por clase
 python -m src.unsupervised    # LSA + KMeans, selección de k por silueta, interpretación
 python -m src.automl          # FLAML, misma partición, 15 min (--budget 120 para una prueba)
@@ -40,8 +40,9 @@ python -m src.report_automl   # gráficos de evidencia de AutoML
 Orden recomendado: `preprocess → train → evaluate → unsupervised → automl`. Todo lee `config/config.yaml`.
 
 ## Metodología y decisiones
-- **Partición:** 80 % train / 20 % test estratificado, fija en `data/split.csv`. El ajuste de hiperparámetros
-  usa validación cruzada de 3 folds **solo dentro de train**; el test se usa una vez al final.
+- **Partición:** train / validación / test = 64 / 16 / 20 %, estratificado y con semilla fija (`data/split.csv`
+  separa el test). Los hiperparámetros y el modelo final se eligen **con validación**; después el modelo se
+  reentrena con todo train y el test se usa **una sola vez** para el reporte final.
 - **Sin data leakage:**
   - el TF-IDF va dentro del `Pipeline`, así que se ajusta solo con train;
   - duplicados eliminados antes de muestrear;
@@ -51,19 +52,21 @@ Orden recomendado: `preprocess → train → evaluate → unsupervised → autom
 - **Limpieza:** minúsculas, sin URLs ni números, negaciones conservadas (`don't → do not`) y `! ?`.
 - **Métrica principal:** F1 macro (las 3 clases pesan igual; el neutro es la clase difícil).
 
-## Resultados (test, 10 000 reseñas, sin títulos automáticos)
-| Modelo | Accuracy | F1 macro | F1 neutro | Tiempo | Observación |
-|---|---|---|---|---|---|
-| Dummy (clase más frecuente) | 0,333 | 0,167 | 0,000 | 7 s | Baseline / piso |
-| **TF-IDF + LogReg ajustada (C=1)** | **0,748** | **0,748** | **0,653** | 118 s* | Mejor modelo manual |
-| TF-IDF + LogReg (C=2) | 0,745 | 0,745 | 0,647 | 18 s | |
-| TF-IDF + SVM lineal | 0,739 | 0,738 | 0,634 | 10 s | |
-| TF-IDF + LightGBM | 0,732 | 0,732 | 0,632 | 499 s | |
-| AutoML FLAML (lrl1, 15 min) | 0,720 | 0,720 | 0,625 | 954 s | Benchmark |
+## Resultados
+Selección con **validación** (16 % de los datos); el test (20 %) se usa una sola vez, al final.
 
-\* incluye la búsqueda de C con CV de 3 folds. Detalle en `reports/comparativa_final.csv`;
-evidencia de AutoML en `reports/automl_resultado.json`, `reports/automl_trials.csv`, `reports/automl.log`
-y `reports/figures/automl_curva.png`.
+| Modelo | F1 macro validación | F1 macro test | F1 neutro test | Tiempo | Observación |
+|---|---|---|---|---|---|
+| Dummy (clase más frecuente) | 0,167 | 0,167 | 0,000 | 13 s | Baseline / piso |
+| **TF-IDF + LogReg (C=1)** | **0,739** | **0,748** | **0,653** | 34 s | **Elegido por validación** |
+| TF-IDF + LightGBM | 0,732 | 0,732 | 0,632 | 860 s | |
+| TF-IDF + SVM lineal | 0,731 | 0,738 | 0,634 | 18 s | |
+| AutoML FLAML (lrl1, 15 min) | 0,721 (CV) | 0,720 | 0,625 | 954 s | Benchmark |
+
+C de la LogReg elegido en validación entre {0,5; 1; 2; 4; 8} (`reports/tuning_logreg_val.csv`).
+Tiempos: entrenamiento en sub-train + reentrenamiento con todo train, en 2 núcleos.
+Detalle en `reports/comparativa_final.csv`; evidencia de AutoML en `reports/automl_resultado.json`,
+`reports/automl_trials.csv`, `reports/automl.log` y `reports/figures/automl_curva.png`.
 
 ## Estado del EC2
 - [x] Fuente, subconjunto y etiqueta documentados

@@ -13,25 +13,25 @@
   `reports/automl_trials.csv` (todos los trials), `reports/figures/automl_curva.png`.
 
 ## Resultados
-| Modelo | F1 macro (test) | F1 neutro | Tiempo |
-|---|---|---|---|
-| TF-IDF + LogReg ajustada (mejor manual) | **0,748** | **0,653** | 118 s |
-| TF-IDF + LightGBM (manual) | 0,732 | 0,632 | 499 s |
-| **Mejor de AutoML: FLAML → regresión logística L1 (C=1)** | 0,720 | 0,625 | 954 s |
-| Dummy (baseline) | 0,167 | 0,000 | 7 s |
+| Modelo | F1 macro validación | F1 macro test | F1 neutro test | Tiempo |
+|---|---|---|---|---|
+| TF-IDF + LogReg C=1 (mejor manual, elegido por validación) | **0,739** | **0,748** | **0,653** | 34 s |
+| TF-IDF + LightGBM (manual) | 0,732 | 0,732 | 0,632 | 860 s |
+| **Mejor de AutoML: FLAML → regresión logística L1 (C=1)** | 0,721 (CV 3 folds) | 0,720 | 0,625 | 954 s |
+| Dummy (baseline) | 0,167 | 0,167 | 0,000 | 13 s |
 
 FLAML ejecutó 11 trials en 15 minutos: 9 de LightGBM (F1 de validación hasta 0,694), 1 de XGBoost (0,701) y
 1 de regresión logística L1 (0,721), que fue el mejor. No llegó a probar Random Forest ni Extra Trees.
 
 ## Discusión de trade-offs
-- **Rendimiento:** AutoML quedó 2,8 puntos de F1 por debajo del mejor modelo manual. La causa principal es la
+- **Rendimiento:** AutoML quedó 2,8 puntos de F1 en test (1,8 en validación) por debajo del mejor modelo manual. La causa principal es la
   representación: al comprimir el TF-IDF de 100 000 términos a 300 componentes con SVD se pierde información
   léxica fina (negaciones, bigramas como "stopped working"), que es justo lo que aprovecha la regresión
   logística manual sobre el TF-IDF disperso completo.
 - **Hallazgo coincidente:** sin que se lo indicáramos, AutoML también terminó eligiendo un **modelo lineal**
   por encima de los árboles con boosting. Esto respalda nuestra conclusión manual: en texto representado con
   TF-IDF, los modelos lineales bastan y los árboles no compensan su costo.
-- **Tiempo:** AutoML usó 954 s contra 118 s de la LogReg ajustada (8 veces más) para un resultado peor. Con
+- **Tiempo:** AutoML usó 954 s contra 34 s de la LogReg manual (unas 28 veces más) para un resultado peor. Con
   2 núcleos solo alcanzó a evaluar 11 configuraciones; con más presupuesto o más núcleos podría acercarse.
 - **Interpretabilidad:** la LogReg manual sobre TF-IDF permite leer las palabras que empujan a cada clase.
   El modelo de AutoML opera sobre componentes SVD, que no se pueden leer como palabras.
