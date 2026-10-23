@@ -35,6 +35,7 @@ python -m src.train           # Dummy + LogReg + SVM + LightGBM + tuning (≈ 10
 python -m src.evaluate        # matriz de confusión, reporte por clase, errores, palabras por clase
 python -m src.unsupervised    # LSA + KMeans, selección de k por silueta, interpretación
 python -m src.automl          # FLAML, misma partición, 15 min (--budget 120 para una prueba)
+python -m src.report_automl   # gráficos de evidencia de AutoML
 ```
 Orden recomendado: `preprocess → train → evaluate → unsupervised → automl`. Todo lee `config/config.yaml`.
 
@@ -51,14 +52,18 @@ Orden recomendado: `preprocess → train → evaluate → unsupervised → autom
 - **Métrica principal:** F1 macro (las 3 clases pesan igual; el neutro es la clase difícil).
 
 ## Resultados (test, 10 000 reseñas, sin títulos automáticos)
-| Modelo | Accuracy | F1 macro | F1 neutro | Observación |
-|---|---|---|---|---|
-| Dummy (clase más frecuente) | 0,333 | 0,167 | 0,000 | Baseline / piso |
-| TF-IDF + LogReg ajustada (C=1) | **0,748** | **0,748** | **0,653** | Mejor modelo manual |
-| TF-IDF + LogReg (C=2) | 0,745 | 0,745 | 0,647 | |
-| TF-IDF + SVM lineal | 0,739 | 0,738 | 0,634 | |
-| TF-IDF + LightGBM | ver `reports/resultados_modelos.csv` | | | |
-| Mejor de AutoML (FLAML) | ver `reports/comparativa_final.csv` | | | Benchmark |
+| Modelo | Accuracy | F1 macro | F1 neutro | Tiempo | Observación |
+|---|---|---|---|---|---|
+| Dummy (clase más frecuente) | 0,333 | 0,167 | 0,000 | 7 s | Baseline / piso |
+| **TF-IDF + LogReg ajustada (C=1)** | **0,748** | **0,748** | **0,653** | 118 s* | Mejor modelo manual |
+| TF-IDF + LogReg (C=2) | 0,745 | 0,745 | 0,647 | 18 s | |
+| TF-IDF + SVM lineal | 0,739 | 0,738 | 0,634 | 10 s | |
+| TF-IDF + LightGBM | 0,732 | 0,732 | 0,632 | 499 s | |
+| AutoML FLAML (lrl1, 15 min) | 0,720 | 0,720 | 0,625 | 954 s | Benchmark |
+
+\* incluye la búsqueda de C con CV de 3 folds. Detalle en `reports/comparativa_final.csv`;
+evidencia de AutoML en `reports/automl_resultado.json`, `reports/automl_trials.csv`, `reports/automl.log`
+y `reports/figures/automl_curva.png`.
 
 ## Estado del EC2
 - [x] Fuente, subconjunto y etiqueta documentados
@@ -68,7 +73,7 @@ Orden recomendado: `preprocess → train → evaluate → unsupervised → autom
 - [ ] Diagnóstico de calidad de datos y 3–5 hallazgos del EDA en el informe
 - [ ] Análisis de errores interpretado (`reports/errores_logreg.csv`)
 - [ ] No supervisado: elegir k, interpretar clusters, limitaciones (`src/unsupervised.py`)
-- [ ] AutoML con 15 min y comparación crítica (`src/automl.py`)
+- [x] AutoML con 15 min y comparación con el mejor manual (`src/automl.py`, `src/report_automl.py`)
 - [ ] Informe técnico (8–12 pág.) y presentación en `reports/defensa/`
 
 ## Parte II (fuera del EC2)
